@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8. 幻燈片_拆解動作二</title>
+    <script src="https://unpkg.com/vue@next"></script>
+</head>
+<body>
+    <h5>幻燈片_拆解動作二</h5>
+    <p>v-for:列表渲染 + v-on事件 + v-bind屬性綁定</p>
+    <h6>想法</h6>
+    <p>1.先做出可以scroll的小圖效果：用css做出效果</p>
+    <p>2.想要點擊小圖就換大圖:利用和頁碼一樣的原理去做點擊效果，將剛剛頁碼的@click事件，綁在小圖片上面</p>
+
+    <div id="view">
+        <div class="slideContainer">
+            <div class="mainImgContainer">
+                <!-- img_{{currentPage}} -->
+                <img :src="`https://picsum.photos/200/200?random=${currentPage}`">
+            </div>
+
+            <div class="btnContainer">
+                <button @click="prevPage"> < </button>
+                <div 
+                    v-for="(slide) in paginations" 
+                    class="smallImgContainer"
+                    :class="{
+                        'activeSlide': (currentPage === slide)
+                    }"
+                    @click="selectPage(slide)" 
+                >
+                    <!-- img_{{slide}} -->
+                    <img :src="`https://picsum.photos/200/200?random=${slide}`">
+                </div>
+                <button @click="nextPage"> > </button>
+            </div>
+        </div>
+    </div>
+    <p>這邊是透過image url的方式讓換圖片，想做動畫效果需要再多一些處理</p>
+
+</body>
+<script>
+    const VM = {
+        data(){
+            return {
+                paginations: 10,
+                currentPage: 1
+            }
+        },
+        methods: {
+            prevPage(){
+                //當前頁面是第一頁，不能再往前
+                if(this.currentPage === 1) return
+                //this.currentPage = this.currentPage - 1
+                this.currentPage -= 1
+            },
+            nextPage(){
+                //當前頁面是最後一頁，不能再往後
+                if(this.currentPage >= this.paginations) return
+                //this.currentPage = this.currentPage + 1
+                this.currentPage += 1
+            },
+            selectPage(val){
+                this.currentPage = val
+            }
+        }
+    }
+    Vue.createApp(VM).mount('#view')
+</script>
+</html>
+<style>
+    .activeBtnStyle{
+        background-color: #999;
+        color: #fff;
+    }
+    .slideContainer{
+        position: relative;
+        width: 100%;
+        text-align: center;
+        /* 讓child div不准換行 */
+        white-space: nowrap;
+        overflow: hidden;
+        overflow-x: scroll;
+    }
+    .mainImgContainer{
+        width: 20rem;
+        height: 20rem;
+        background: #f0f0f0;
+        margin: 1rem auto;
+    }
+    .smallImgContainer{
+        position: relative;
+        display: inline-block;
+        width: 5rem;
+        height: 5rem;
+        border: 1px dashed #ddd;
+        opacity: 0.3;
+    }
+    .activeSlide{
+        opacity: 1;
+    }
+    img{
+        height: 100%;
+    }
+</style>

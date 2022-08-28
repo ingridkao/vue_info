@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>6. 頁碼 v-for:列表渲染 + v-on事件 + v-bind屬性綁定</title>
+    <script src="https://unpkg.com/vue@next"></script>
+</head>
+<body>
+    <h6>v-for:列表渲染 + v-on事件 + v-bind屬性綁定</h6>
+    <p>v-on:click="function name"<span>等同於 @click="function name"</span></p>
+    <p>v-bind:class="{}"<span>等同於 :class="{}"</span></p>
+    <p>通常使用綠色寫法</p>
+
+    <div id="view">
+        <h6>頁碼</h6>
+        <button @click="prevPage">
+            prev
+        </button>
+        <!-- v-bind:class 如果想要傳入多個class name可以用物件包起來 -->
+        <button 
+            v-for="(page) in paginations" 
+            :class="{
+                'activeBtnStyle': (currentPage === page)
+            }"
+            @click="selectPage(page)" 
+        >
+            {{page}}
+        </button>
+
+        <button @click="nextPage">
+            next
+        </button>
+    </div>
+</body>
+<script>
+    const VM = {
+        data(){
+            return {
+                paginations: 10,
+                currentPage: 1
+            }
+        },
+        methods: {
+            prevPage(){
+                //當前頁面是第一頁，不能再往前
+                if(this.currentPage === 1) return
+                //this.currentPage = this.currentPage - 1
+                this.currentPage -= 1
+            },
+            nextPage(){
+                //當前頁面是最後一頁，不能再往後
+                if(this.currentPage === this.papaginationsges) return
+                //this.currentPage = this.currentPage + 1
+                this.currentPage += 1
+            },
+            selectPage(val){
+                this.currentPage = val
+            }
+        }
+    }
+    Vue.createApp(VM).mount('#view')
+</script>
+</html>
+<style>
+    li{
+        list-style-type: none;
+    }
+    span{
+        margin: 0.25rem;
+    }
+    .activeBtnStyle{
+        background-color: #999;
+        color: #fff;
+    }
+    p span{
+        color: darkcyan;
+    }
+</style>

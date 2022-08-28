@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>0開始使用vue</title>
+    <script src="https://unpkg.com/vue@next"></script>
+</head>
+<body>
+    三個寫法都是一樣的，只是宣告的方式不同
+    <div id="view1">
+        寫法一
+        {{msg}}
+    </div>
+    <div id="view2">
+        寫法二
+        {{msg}}
+    </div>
+    <div id="view3">
+        寫法三
+        {{msg}}
+    </div>
+</body>
+<script>
+    // 寫法一
+    Vue.createApp({
+        data(){
+            return {
+                msg: 'Hello1'
+            }
+        }
+    }).mount('#view1')
+
+     // 寫法二
+    const App2 = {
+        data(){
+            return {
+                msg: 'Hello2'
+            }
+        }
+    }
+     Vue.createApp(App2).mount('#view2')
+
+    // 寫法二
+    const App3 = Vue.createApp({
+        data(){
+            return {
+                msg: 'Hello3'
+            }
+        }
+    })
+    App3.mount('#view3')
+</script>
+</html>

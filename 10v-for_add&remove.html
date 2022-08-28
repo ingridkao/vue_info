@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>10. 新增刪除物件 v-for:列表渲染 + v-on事件</title>
+    <script src="https://unpkg.com/vue@next"></script>
+</head>
+<body>
+    <h6>v-for:列表渲染 + v-on事件</h6>
+    <hr>
+    <div id="view">
+        <p>
+            <!-- frameworks is {{frameworks}} -->
+            frameworks is
+        </p>
+        <ul>
+            <!-- key: 補上唯一值，像是id或是index，可節省效能 -->
+            <li v-for="(item, index) in frameworks" :key="index">
+                <button @click="removeItem(index)">移除</button>
+                Key : {{index}}
+                Value : {{item}}
+            </li>
+        </ul>
+        <hr>
+        <p>輸入名稱(物件的key）和類型(物件的value）</p>
+        <label for="">名稱</label>
+        <input type="text" v-model="name">
+
+        <label for="type">類型</label>
+        <select name="type" id="type" v-model="type">
+            <option value="">請選擇</option>
+            <option value="Frontend">Frontend</option>
+            <option value="Backend">Backend</option>
+        </select>
+        <button @click="addItem">新增</button>
+    </div>
+</body>
+<script>
+    const VM = {
+        data(){
+            return {
+                frameworks: {
+                    Vue: "Frontend",
+                    React: "Frontend",
+                    Angular: "Frontend",
+                    Laravel: "Backend",
+                    CakePHP: "Backend",
+                    Django: "Backend",
+                },
+                name: "",
+                type: "",
+            }
+        },
+        methods: {
+            addItem(){
+                //set key & value
+                this.frameworks[this.name] = this.type
+                //clean input & select
+                this.name = ""
+                this.type = ""
+
+            },
+            removeItem(key){
+                //刪除指定物件的方法
+                delete this.frameworks[key]
+            }
+        }
+    }
+    Vue.createApp(VM).mount('#view')
+</script>
+</html>
+<style>
+    li{
+        list-style-type: none;
+    }
+</style>

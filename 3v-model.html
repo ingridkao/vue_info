@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3v-model</title>
+    <script src="https://unpkg.com/vue@next"></script>
+</head>
+<body>
+    <h6>計算屬性computed + v-model:</h6>
+    <p>資料雙向綁定:</p>
+    <ul>
+        <li>可以用在input, 包含text, checkbox ,radio</li>
+        <li>以及select, textarea</li>
+    </ul>
+    <div id="view">
+        <div>
+            <!-- 身高:{{h}}cm -->
+            <label for="">身高:</label>
+            <input type="text" v-model="h">cm
+        </div>
+        <div>
+            <!-- 體重:{{w}}kg -->
+            <label for="">體重:</label>
+            <input type="text" v-model="w">kg
+        </div>
+        <div>
+            <p>每當 w和m 的值有變化時，便重新計算 BMI</p>
+            BMI: {{bmi}}
+        </div>
+    </div>
+</body>
+<script>
+    const VM = {
+        data(){
+            return {
+                w: 50,
+                h: 150
+            }
+        },
+        computed: {
+            // 每當 h 的值有變化時，便重新計算 m 
+            // m: function() {
+            m(){
+                //將公分轉成公尺，並四捨五入
+                // const：常數(const) → 不能被重複賦值(reassigned)
+                // this：Vue實體
+                const Val = (this.h/100).toFixed(2)
+                //透過parseFloat將字串轉乘浮點數(有小數點的數值)
+                return parseFloat(Val)
+            },
+
+            // 每當 w和m 的值有變化時，便重新計算 bmi
+            bmi: function() {
+            // bmi(){
+                // BMI公式 ＝ kg/(m*m)
+                // let：變數(variable) → 可以被重複賦值
+                // this：Vue實體
+                let BMI = this.w/(this.m*this.m)
+                if(BMI){
+                    return parseFloat(BMI.toFixed(2))
+                }else{
+                    return 0
+                }
+                //可以簡寫成下列這樣
+                // Boolen? true的時候要呈現的數值: false的時候要呈現的數值
+                // return BMI? parseFloat(BMI.toFixed(2)): 0
+            }
+        }
+    }
+    //掛載在<div id="view"/>
+    Vue.createApp(VM).mount('#view')
+</script>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4v-for</title>
+    <script src="https://unpkg.com/vue@next"></script>
+</head>
+<body>
+    <h6>v-for:列表渲染</h6>
+
+    <div id="view">
+        <h6>頁碼</h6>
+        <button v-for="(item) in 10">
+            {{item}}
+        </button>
+        
+        <h6>渲染物件</h6>
+        <p>所有物件都是key：value的方式組成</p>
+        <ul>
+           <li v-for="(item, index) in obj">
+                <span>Object key: {{index}}</span>
+                <span>Object value: {{item}}</span>
+           </li>
+        </ul>
+    </div>
+</body>
+<script>
+    const VM = {
+        data(){
+            return {
+                array: [1,2,3],
+                obj: {
+                    a:1,
+                    b:2
+                }
+            }
+        },
+        computed: {
+        }
+    }
+    Vue.createApp(VM).mount('#view')
+</script>
+</html>
+<style>
+    li{
+        list-style-type: none;
+    }
+    span{
+        margin: 0.25rem;
+    }
+</style>

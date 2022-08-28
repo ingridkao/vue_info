@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>9. 商品清單 v-for:列表渲染</title>
+    <script src="https://unpkg.com/vue@next"></script>
+</head>
+<body>
+    <h6>v-for:列表渲染</h6>
+    <p>物件很彈性且可以記錄很多資料但是位置不固定，而陣列可以被記住位置</p>
+    <p>為了達到兩個優點可以把object放到array裏面</p>
+    <hr>
+    <div id="view">
+
+        <p>cardsArr is</p>
+        <ul>
+            <!-- key: 補上唯一值，像是id或是index，可節省效能 -->
+            <li v-for="(item, index) in cardsArr" :key="index">
+                陣列index : {{index}}
+                陣列Value : {{item}}
+            </li>
+        </ul>
+        <div class="cardContainer">
+            <div 
+                v-for="(item, index) in cardsArr" 
+                :key="index"
+                :style="{
+                    opacity: item.hp*0.1,
+                }"
+            >
+                <div class="emoji">{{item.name}}</div>
+                <!-- 這邊寫個血量值 -->
+                <div class="hpBox">
+                    <div :style="{
+                        width: `${item.hp*10}%`,
+                    }">HP</div>
+                </div>
+                <div>職稱：{{item.job}}</div>
+            </div>
+        </div>
+
+        <hr>
+        <p>cardsObj is</p>
+        <ul>
+            <!-- key: 補上唯一值，像是id或是index，可節省效能 -->
+            <!-- 第三個參數僅Object才會有，陣列第三個參數不存在 -->
+            <li v-for="(item, key, index) in cardsObj" :key="key">
+                物件順序 : {{index}}
+                物件Key : {{key}}
+                物件Value : {{item}}
+            </li>
+        </ul>
+        <!-- v-bind:style裡面也是放入object，需要把css樣式放進key的位置 -->
+        <!-- key: 如果沒有用引號分開則需要寫成駝峰格式，遇到dash的第一個字母改成大寫 -->
+        <!-- value: 如果需要特別處理變數則可以利用模板語法`${變數}px` -->
+        <div class="cardContainer">
+            <div 
+                v-for="(item, key, index) in cardsObj" 
+                :key="key"
+                :style="{
+                    'background-color': item.color,
+                    borderRadius: (index+1)*20+'px'
+                }"
+            >
+                <!--  (index+1)*20+'px' 等同於 `${(index+1)*20}px`  -> 看哪種寫法比較順手-->
+                <div class="emoji">{{key}}</div>
+                <p>❤️：{{item.food}}</p>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    const VM = {
+        data(){
+            return {
+                //當key是奇怪的字或是有標點符號通常要用引號包起來作為字串，有些工程師會習慣統一都加引號
+                //也可以用obj來寫list，但這個順序無法被指定
+                cardsObj: {
+                    '🐢':{
+                        food: "漢堡",
+                        color: "green"
+                    },
+                    '🐷':{
+                        food: "爭鮮",
+                        color: "pink"
+                    },
+                    '🐟':{
+                        food: "豬排",
+                        color: "blue"
+                    }
+                },
+                //通常和後端工程師或確認API規格後，來判斷要用哪一個
+                cardsArr: [
+                    {
+                        name: "🐮",
+                        job: "貓奴工程師",
+                        hp: 2.5
+                    },
+                    {
+                        name: "🐭",
+                        job: "廚師",
+                        hp: 5
+                    },
+                    {
+                        name:  "🐯",
+                        job: "管理員",
+                        hp: 9
+                    }
+                ]
+            }
+        },
+        methods: {
+            addItem(){
+                //set key & value
+                this.cards[this.name] = this.type
+                //clean input & select
+                this.name = ""
+                this.type = ""
+
+            },
+            removeItem(key){
+                //刪除指定物件的方法
+                delete this.cards[key]
+            }
+        }
+    }
+    Vue.createApp(VM).mount('#view')
+</script>
+</html>
+<style>
+    li{
+        list-style-type: none;
+    }
+    .cardContainer > div{
+        display: inline-block;
+        width: 8rem;
+        height: 10rem;
+        margin: .5rem;
+        background-color: #ddd;
+        text-align: center;
+    }
+    .emoji{
+        font-size: 5rem;
+    }
+    .hpBox{
+        width: 100%;
+        height: 1rem;
+        background-color: #fff;
+    }
+    .hpBox > div{
+        height: 100%;
+        color: #fff;
+        font-size: 8px;
+        background-color: rgb(168, 90, 90);
+    }
+</style>

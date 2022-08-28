@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1資料</title>
+    <script src="https://unpkg.com/vue@next"></script>
+</head>
+<body>
+    <h6>資料可以放入的型態</h6>
+    <p>將data中定義好的資料，透過{{}}模板，渲染在html中</p>
+    <div id="view">
+        <div>
+            String
+            {{msg}}
+        </div>
+        <div>
+            number
+            {{num}}  
+        </div>
+        <div>
+            Array陣列
+            {{arr}}  
+        </div>
+        <div>
+            Object
+            {{obj}}  
+        </div>
+    </div>
+</body>
+<script>
+    const VM = {
+        data(){
+            return {
+                msg: 'Hello2',
+                num: 1,
+                arr: [1,2,3],
+                obj: {
+                    a:1,b:2
+                }
+            }
+        }
+    }
+    //掛載在<div id="view"/>
+    Vue.createApp(VM).mount('#view')
+</script>
+</html>
