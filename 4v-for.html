@@ -9,19 +9,39 @@
 </head>
 <body>
     <h6>v-for:列表渲染</h6>
+    <a href="https://vuejs.org/guide/essentials/list.html" target="_blank">Vue官方文件</a>
 
     <div id="view">
-        <h6>頁碼</h6>
+        <h6>可用在頁碼或其他應用</h6>
+        <p>可以接受整數作為渲染的條件</p>
         <button v-for="(item) in 10">
             {{item}}
         </button>
         
-        <h6>渲染物件</h6>
-        <p>所有物件都是key：value的方式組成</p>
+        <h6>渲染“陣列”</h6>
+        <p>陣列是元素的集合排列而成</p>
+        <p>
+            v-for="(value陣列數值, index索引值) in 陣列
+        </p>
+        <p>只要傳入合法變數即可以取出陣列中相對應數值</p>
         <ul>
-           <li v-for="(item, index) in obj">
-                <span>Object key: {{index}}</span>
-                <span>Object value: {{item}}</span>
+           <li v-for="(item, index) in array">
+                <span>Array index: {{index}}</span>
+                <span>Array value: {{item}}</span>
+           </li>
+        </ul>
+
+        <h6>渲染“物件”</h6>
+        <p>物件是key：value的方式組成</p>
+        <p>
+            v-for="(value屬性值, key屬性鍵值, index索引值) in 物件
+        </p>
+        <p>只要傳入合法變數即可以取出物件中相對應數值</p>
+        <ul>
+           <li v-for="(val, key, index) in obj">
+                <span>Object index: {{index}}</span>
+                <span>Object key: {{key}}</span>
+                <span>Object value: {{val}}</span>
            </li>
         </ul>
     </div>
@@ -36,8 +56,6 @@
                     b:2
                 }
             }
-        },
-        computed: {
         }
     }
     Vue.createApp(VM).mount('#view')

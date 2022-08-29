@@ -41,8 +41,9 @@
         },
         computed: {
             // 每當 h 的值有變化時，便重新計算 m 
-            // m: function() {
-            m(){
+            m: function() {
+            // 可簡寫成
+            // m(){
                 //將公分轉成公尺，並四捨五入
                 // const：常數(const) → 不能被重複賦值(reassigned)
                 // this：Vue實體
@@ -52,8 +53,8 @@
             },
 
             // 每當 w和m 的值有變化時，便重新計算 bmi
-            bmi: function() {
-            // bmi(){
+            // bmi: function() {
+            bmi(){
                 // BMI公式 ＝ kg/(m*m)
                 // let：變數(variable) → 可以被重複賦值
                 // this：Vue實體

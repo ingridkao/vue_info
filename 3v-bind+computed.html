@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3v-bind+computed</title>
+    <script src="https://unpkg.com/vue@next"></script>
+</head>
+<body>
+    <div id="view">
+        <div>
+            <p>v-bind + computed</p>
+            <div
+                :class="[
+                    'box',
+                    {
+                        hideBox: false,
+                        'active-Box': true,
+                    }
+                ]"
+            >
+                如果不想寫那麼多行，用陣列包起來
+            </div>
+            <div :class="boxStyle">
+                和上面一樣，指示把複雜判斷讓computed去判斷計算
+            </div>
+        </div>
+
+        <div>
+            <p>v-bind + methods</p>
+            <div 
+                v-for="item in 5"
+                :class="[ 'square', item%2 ? 'active-Box': null ]"
+                :style="{
+                    'background-color': `#${item}${item}${item}`,
+                    fontSize:  `${item*2.5}px`,
+                    borderRadius: item*2.5 + 'px'
+                }"
+            >
+                {{item}}
+            </div>
+            <p>需要帶參數的時候，使用computed會有些麻煩，可以透過定義在methods工作區的function們來轉換</p>
+            <div 
+                v-for="item in 5"
+                :class="[ 'square', item%2 ? 'active-Box': null ]"
+                :style="parseBox(item)"
+            >
+                {{item}}
+            </div>
+
+        </div>
+    </div>
+</body>
+<script>
+    const VM = {
+        computed: {
+            boxStyle(){
+                return [
+                    'box',
+                    {
+                        hideBox: false,
+                        'active-Box': true,
+                    }
+                ]
+            }
+        },
+        methods:{ 
+            parseBox(item){
+                return {
+                    'background-color': `#${item}${item}${item}`,
+                    fontSize:  `${item*2.5}px`,
+                    borderRadius: item*2.5 + 'px'
+                }
+            }
+        }
+    }
+    Vue.createApp(VM).mount('#view')
+</script>
+</html>
+<style>
+    .box{
+        display: inline-flex; 
+        width: 10rem;
+        height: 5rem;
+        margin: .5rem;
+        text-align: center;
+        background-color: #999;
+        opacity: 1;
+    }
+    .hideBox{
+        opacity: 0.3;
+    }
+    .active-Box{
+        background-color: rgb(106, 155, 148) !important;
+    }
+    .square{
+        display: inline-block; 
+        width: 5rem;
+        height: 5rem;
+        margin: .5rem;
+        color: #fff;
+        text-align: center;
+    }
+</style>

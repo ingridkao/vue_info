@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3v-bind</title>
+    <script src="https://unpkg.com/vue@next"></script>
+</head>
+<body>
+    <h6>v-bind:</h6>
+    <div id="view">
+        <div>
+            <p>屬性綁定1:</p>
+            <p>常見的標籤屬性如class 、 <img>的src，或是<a>的 href 等 DOM 的屬性，都可以透過 v-bind 指令來控制。</p>
+            <div>
+                <p>兩種寫法都可以</p>
+                <img v-bind:src="imageSrcUrl">
+                <img :src="imageSrcUrl">
+            </div>
+        </div>
+
+        <div>
+            <p>樣式綁定2:</p>
+            <p>可以對照原始class的在tag裡面的樣子</p>
+            <p>下面class裡面的寫法都可以</p>
+            <p>1. key值：  class名，可以用原本的方式單引號包起來作為字串，或是使用駝峰式寫法</p>
+            <p>2. value值：定義在Vue裡的data變數</p>
+            <div 
+                v-for="item in 5"
+                class="box"
+                :class="{
+                    hideBox: item%5,
+                    'active-Box':  item === 1,
+                }"
+            >
+                {{item}}
+                {{item%5? 'hide': 'show'}}
+                {{item === 1? 'active': '-'}}
+            </div>
+            <br>
+            <div :class="['box', 'bigBox', (hideTargetBox? 'hideBox': null)]">
+                在這邊，陣列裡面的每個位置可以選擇放字串(`模板字符`是字串)，或物件
+            </div>
+            <div
+                :class="[
+                    'box', 'bigBox',
+                    {
+                        hideBox: false,
+                        'active-Box': true,
+                    }
+                ]"
+            >
+                以此類推，如果不想寫那麼多行可以寫成這樣
+            </div>
+        </div>
+
+        <div>
+            <p>樣式綁定:</p>
+            <p>可以對照原始style的在tag裡面的樣子</p>
+            <p>下面style裡面的寫法都可以</p>
+            <p>1. key值：  css屬性名，可以用原本的方式單引號包起來作為字串，或是使用駝峰式寫法</p>
+            <p>2. value值：組成字串即可，可用“模板字符”也可以用＋來組成字串</p>
+            <div 
+                v-for="item in 5"
+                style="display: inline-block; width: 5rem;height: 5rem;margin: .5rem;color: #fff;text-align: center;"
+                :style="{
+                    'background-color': `#${item}${item}${item}`,
+                    fontSize:  `${item*2.5}px`,
+                    borderRadius: item*2.5 + 'px'
+                }"
+            >
+                {{item}}
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    const VM = {
+        data(){
+            return {
+                hideTargetBox: true,
+                imageSrcUrl: "https://picsum.photos/100/100"
+            }
+        }
+    }
+    //掛載在<div id="view"/>
+    Vue.createApp(VM).mount('#view')
+</script>
+</html>
+<style>
+    .box{
+        display: inline-flex; 
+        width: 5rem;
+        height: 5rem;
+        margin: .5rem;
+        text-align: center;
+        background-color: #999;
+        opacity: 1;
+    }
+    .bigBox{
+        width: 15rem;
+    }
+    .hideBox{
+        opacity: 0.3;
+    }
+    .active-Box{
+        background-color: red;
+    }
+</style>
