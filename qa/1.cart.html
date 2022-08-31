@@ -93,14 +93,15 @@
                     this.orderList[orderIndex]['count'] -= 1
                     this.orderList[orderIndex]['total'] = (this.orderList[orderIndex]['price'] * this.orderList[orderIndex]['count'])
                 }
+                this.setStorage()
             },
             addCarts(id){
                 // {return xxxx} 可以簡寫成 （xxx)
-                const orderIndex = this.orderList.findIndex(item => item.id === id)
+                const orderIndex = this.orderList.findIndex(item => item && item.id === id)
 
                 if(orderIndex < 0){
                     const product = this.productList.find(item => {
-                        return item.id === id
+                        return item && item.id === id
                     })
                     // findIndex找不到的時候會回傳-1 -> 新增至訂單
                     this.orderList.push({
@@ -114,19 +115,30 @@
                     this.orderList[orderIndex]['count'] += 1
                     this.orderList[orderIndex]['total'] = (this.orderList[orderIndex]['price'] * this.orderList[orderIndex]['count'])
                 }
-                //localStorage 的 value僅能存數字字串布林值，陣列或物件要先轉型
+                this.setStorage()
             },
             parseOrderCount(id){
-                const product = this.orderList.find(item => item.id === id)
+                if(!id) return 0
+                const product = this.orderList.find(item => item && item.id === id)
                 return product? product.count : 0
             },
             toCheckout(){
                 // this.orderList = []
-                // localStorage.setItem('tutleShop', JSON.stringify(this.orderList))
             },
+            setStorage(){
+                 //localStorage 的 value僅能存數字字串布林值，陣列或物件要先轉型
+                localStorage.setItem('tutleShop', JSON.stringify(this.orderList))
+            },
+            getStorage(){
+                //localStorage 的 value僅能存數字字串布林值，陣列或物件要先轉型
+                var orderLists = localStorage.getItem("tutleShop")
+                if(!orderLists)return
+                this.orderList = JSON.parse(orderLists)
+            }
         },
         created() {
             // this.getProductList()
+            this.getStorage()
         }
     }
     Vue.createApp(VM).mount('#view')
