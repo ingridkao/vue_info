@@ -41,33 +41,18 @@
                 productList: [
                     {
                         id: 10,
-                        img:"https://picsum.photos/300/200/?random=10",
                         name:"滾筒",
-                        price:2000,
-                        // buy:"加入購物車",
-                        color:"red",
-                        // opacity:.5,
-                        // num:0,
+                        price:2000
                     },
                     {
                         id: 11,
-                        img:"https://picsum.photos/300/200/?random=11",
                         name:"精油",
-                        price:1500,
-                        // buy:"加入購物車",
-                        color:"orange",
-                        // opacity:.5,
-                        // num:0,
+                        price:1500
                     },
                     {
                         id: 12,
-                        img:"https://picsum.photos/300/200/?random=12",
                         name:"按摩球",
-                        price:1000,
-                        // buy:"加入購物車",
-                        color:"green",
-                        // opacity:.5,
-                        // num:0,
+                        price:1000
                     },
                 ],
                 orderList: []
@@ -85,7 +70,7 @@
             reduceCarts(id){
                 // {return xxxx} 可以簡寫成 （xxx)
                 const orderIndex = this.orderList.findIndex(item => item.id === id)
-                if(orderIndex < 0)return
+                if(orderIndex < 0) return
                 if(this.orderList[orderIndex]['count'] === 1){
                     //剩下一個，要直接移除
                     this.orderList.splice(orderIndex, 1)
@@ -127,11 +112,11 @@
             },
             setStorage(){
                  //localStorage 的 value僅能存數字字串布林值，陣列或物件要先轉型
-                localStorage.setItem('tutleShop', JSON.stringify(this.orderList))
+                localStorage.setItem('turleShop', JSON.stringify(this.orderList))
             },
             getStorage(){
                 //localStorage 的 value僅能存數字字串布林值，陣列或物件要先轉型
-                var orderLists = localStorage.getItem("tutleShop")
+                var orderLists = localStorage.getItem("turleShop")
                 if(!orderLists)return
                 this.orderList = JSON.parse(orderLists)
             }
