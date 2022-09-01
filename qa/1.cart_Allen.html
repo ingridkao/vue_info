@@ -82,7 +82,9 @@
             text-decoration: none;
             color: aliceblue;
         }
-      
+        .product{
+            height: 25rem;
+        }
         
     </style>
 </head>
@@ -93,7 +95,7 @@
         <h1>商品清單</h1>
     </div>
     <div id="app" class="container">
-        <div class="row row-cols-1 row-cols-md-3   row-cols-lg-4 ">
+        <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 product">
             
     <div class="card col" v-for="(item ,key,value) in commodity" :key="key" 
             
@@ -139,7 +141,7 @@
             </tr>
            
             <tr v-for="(item, key ,value) in data" :key="item.id" :style="{backgroundColor:item.obj.color}">
-                
+                <th>{{item}}</th>
                 <th><img :src="item.obj.img" class="card-img-top" alt="..." class="w-100"></th>
                 <th>{{item.obj.name}}</th>
                 <th>${{item.obj.price}}</th>
@@ -176,6 +178,7 @@
                 return{
                     commodity:[
                         {
+                            cid: 10,
                             img:"https://picsum.photos/300/200/?random=10",
                             name:"滾筒",
                             price:2000,
@@ -185,6 +188,7 @@
                             num:0,
                         },
                          {
+                            cid: 11,
                             img:"https://picsum.photos/300/200/?random=11",
                             name:"精油",
                             price:1500,
@@ -194,6 +198,7 @@
                              num:0,
                         },
                          {
+                            cid: 12,
                             img:"https://picsum.photos/300/200/?random=12",
                             name:"按摩球",
                             price:1000,
@@ -207,24 +212,33 @@
                     obj:"",
                     show:false,
                     newData:0,
-                    total:[],
+                    total:0,
                     gold:0,  
                 }
             },
             methods: {
             
                 add(item){
+                    // console.log(item)
+                    // 加入購物車基本功能正常，但是點同樣產品無法累積
+                    // 1. commodity item先加入可辨識的cid
 
-    
+                    //2. 確認有已加入購物車的商品
+                    const targetIndex = this.data.findIndex(dataItem=> dataItem.obj.cid===item.cid)
+                    // console.log(targetIndex);
+                    if(targetIndex >= 0){
+                        //3. 找到後再增加數量num
+                        this.data[targetIndex]['obj']['num'] += item.num
+                    }else{
                         this.data.push({
-                        id:this.data.length+1,
-                        obj:{...item}
+                            id:this.data.length+1,
+                            obj:{...item}
                         })
-                       
-                        console.log(item)
+                    }
                     // this.total=parseFloat(this.total+item.price*item.num);
                 },
                 remove(item){
+                    // 移出購物車：功能正常
                     const index = this.data.findIndex(obj=>obj.id===item.id)
                     // this.total=parseFloat(this.total-this.data[index].obj.price*this.data[index].obj.num) 
                     this.data.splice(index,1)  
@@ -273,62 +287,59 @@
                     return JSON.parse(JSON.stringify(this.data))
                 },
 
-               money(){
-                    return parseInt(this.total*0.85)
-               }
+                money(){
+                        return parseInt(this.total*0.85)
+                }
             },
             watch:{
-               new : {
-                  handler (newVal , oldVal) {
-                     for(let i=0;i<newVal.length;i++){
-                      
-                  
-                        }
-                    } ,
-                   
-                }, 
+                //一般會避免用new來命名
+                // new : {
+                //     handler (newVal , oldVal) {
+                //         for(let i=0;i<newVal.length;i++){}
+                //     } ,
+                // }, 
                 car: {
-                  handler (newVal , oldVal) {
-                    
-                    for(let i=0;i<newVal.length;i++){
-                        this.gold += newVal[i].obj.price*newVal[i].obj.num
-                    }
-                    console.log(this.gold)
- 
-                }
-                        
-                      
-                    } ,
-                   
-                
-                total:{
-                    handler(newValue,oldValue){
-                        log
-                        if(newValue>10000){
-                            // this.message();
+                    handler (newVal , oldVal) {
+                        // 監聽購物車計算總金額
+                        for(let i=0;i<newVal.length;i++){
+                            this.gold += newVal[i].obj.price*newVal[i].obj.num
                         }
-                    }
-                },
+                        // console.log(this.gold)
+                    } 
+                } ,
+                   
+                // 不知道這一段想做什麼
+                // total:{
+                //     handler(newValue,oldValue){
+                //         // 
+                //         if(newValue>10000){
+                //             // this.message();
+                //         }
+                //     }
+                // },
              
-                "commodity.num":{
-                    handler(newValue,oldValue){
-                        if(newValue>3){
-                            alert("")
-                        }
-                  
-                    }
-                   
-                },
-                "data.obj.num":{
-                    handler(newValue,oldValue){
-                        if(newValue>5){
-                           console.log("allen")
-                        }
-                    }
-                },
-                immediate:true,//從零開始監聽
-                deep: true//監聽陣列內容
+                // 不知道這一段想做什麼
+                // "commodity.num":{
+                //     handler(newValue,oldValue){
+                //         if(newValue>3){
+                //             alert("")
+                //         }
+                //     },
+                //     deep: true//監聽陣列內容
+                // },
 
+                //想要監聽不大會抓到第三層的內容
+                // "data.obj.num":{
+                "data":{
+                    handler(newValue,oldValue){
+                        console.log(newValue)
+                        if(newValue.length>2){
+                           console.log("買超過兩個商品")
+                        }
+                    },
+                    // immediate:true,//從零開始監聽
+                    deep: true//監聽陣列內容
+                },
             },
 
             mounted() {
