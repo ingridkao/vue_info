@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2login+</title>
+    <script src="https://unpkg.com/vue@next"></script>
+</head>
+<body>
+    <div id="app">
+        <div 
+            v-if="loginToggle"
+            id="loginContainer" 
+            class="container"
+        >
+            <h6>Log in</h6>
+            <p>Hello, friend! I'm sdadasdsadasdcsdcsdcc來登入喔喔喔</p>
+            <form action="login">
+                <input type="email" placeholder="Email" v-model.trim="email">
+                <input type="password" placeholder="password" v-model.trim="password">
+            </form>
+            <button @click="loginSend">Let's start</button>
+            <div class="oauthBtn">
+                <button>F</button>
+                <button>G</button>
+            </div>
+            <p>
+                Dont' have an account?<button @click="loginToggleBtn(false)">Sign UP</button>
+            </p>
+        </div>
+        <div 
+            v-else
+            id="signupContainer" 
+            class="container"
+        >
+            <h6>Sign up</h6>
+            <p>Hello, friend! I'm sdadasdsadasdcsdcsdcc來加入吧吧吧吧</p>
+            <form action="signup">
+                <input type="email" placeholder="Email" v-model.trim="email">
+                <input type="password" placeholder="password" v-model.trim="password">
+            </form>
+            <button @click="signupSend">Sign up with Email</button>
+            <button>Sign up with Facebook</button>
+            <button>Sign up with Google</button>
+            <p>
+                Already have an account<button @click="loginToggleBtn(true)">Log in</button>
+            </p>
+        </div>
+        <p>點擊按鈕後：{{msg}}</p>
+    </div>
+    <p>可以思考怎麼改寫的更簡潔易懂</p>
+</body>
+<script>
+    const App = {
+        data(){
+            return {
+                loginToggle: true,
+                email: '',
+                password: '',
+                msg: ''
+            }
+        },
+        methods: {
+            loginToggleBtn(val){
+                this.loginToggle = val
+                this.msg = ''
+            },
+            loginSend(){
+                this.msg = `
+                    login: 
+                    email: ${this.email}
+                    password: ${this.password}
+                `
+            },
+            signupSend(){
+                this.msg = `
+                    signup: 
+                    email: ${this.email}
+                    password: ${this.password}
+                `
+            }
+        }
+    }
+    Vue.createApp(App).mount('#app')
+</script>
+</html>
+<style>
+    .container{
+        width: 50vw;
+        height: 30rem;
+        padding: 1rem;
+        border: 1px solid #ddd;
+    }
+    .container > *{
+        text-align: center;
+        padding: 0;
+    }
+    h6{
+        font-size: 2rem;
+        margin: 1rem;
+    }
+    p{
+        width: 80%;
+        margin: 1rem auto;
+    }
+    p button{
+        border: none;
+        border-bottom: 1px solid #000;
+        background-color: transparent;
+    }
+    input,
+    .container > button{
+        display: block; 
+        border-radius: 2rem;
+        margin: .5rem auto;
+        padding: .5rem 2rem;
+        line-height: 2;
+    }
+    input{
+        width: 15rem;
+        height: 2rem;
+    }
+    .container > button{
+        width: 19rem;
+    }
+    .oauthBtn button{
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        margin: .5rem;
+    }
+</style>

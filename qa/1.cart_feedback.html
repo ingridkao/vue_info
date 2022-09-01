@@ -59,14 +59,6 @@
             }
         },
         methods: {
-            // getProductList(){
-            //     fetch('../file/productList.json')
-            //     .catch(error=>console.log(error))
-            //     .then(res=>res.json())
-            //     .then(json=>{
-            //         this.productList = json
-            //     })                
-            // },
             reduceCarts(id){
                 // {return xxxx} 可以簡寫成 （xxx)
                 const orderIndex = this.orderList.findIndex(item => item.id === id)
@@ -122,7 +114,6 @@
             }
         },
         created() {
-            // this.getProductList()
             this.getStorage()
         }
     }

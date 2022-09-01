@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>carts</title>
+    <script src="https://unpkg.com/vue@next"></script>
+</head>
+<body>
+    <p>加入購物車:利用local storage來暫存，但瀏覽器關掉就沒有了</p>
+    <p>想法：</p>
+    <ol>
+        <li>一進入畫面讀取local storage</li>
+        <li>商品列表用v-for渲染</li>
+    </ol>
+    <div id="view">
+        <div id="productContainer">
+            <!-- {{typeof productList}}
+            {{Array.isArray(productList)}} -->
+            <div v-for="(item, index) in productList" :key="item.id">
+                {{item}}
+            </div>
+        </div>
+        <p>
+            購物數量：{{productCount}}
+        </p>
+        <button @click="addProduct">+</button>
+        <button @click="addCarts">新增至購物車</button>
+        <button @click="checkout">結帳</button>
+
+    </div>
+</body>
+<script>
+    const VM = {
+        data(){
+            return {
+                productList: [],
+                productCount: 0,
+                orderList: []
+            }
+        },
+        methods: {
+            getProductList(){
+                fetch('../file/productList.json')
+                .catch(error=>console.log(error))
+                .then(res=>res.json())
+                .then(json=>{
+                    this.productList = json
+                })                
+            },
+            addProduct(){
+                this.productCount += 1
+            },
+            addCarts(){
+                //localStorage 的 value僅能存數字字串布林值，陣列或物件要先轉型
+                localStorage.setItem('tutleShop', JSON.stringify(this.orderList))
+            },
+            checkout(){
+                alert('要將訂單資訊帶去結帳畫面')
+            },
+        },
+        created() {
+            this.getProductList()
+        }
+    }
+    Vue.createApp(VM).mount('#view')
+</script>
+</html>

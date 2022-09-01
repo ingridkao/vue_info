@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8-4. 幻燈片-transitions</title>
+    <script src="https://unpkg.com/vue@next"></script>
+</head>
+<body>
+    <h6>想法</h6>
+    <p>這個改用css 的transitions來對left做動畫補間</p>
+    <img src="../img/slider.jpg" alt="" class="infoImg">
+    <p>一開始寫著時候可以畫圖確認一下left開怎麼調節。</p>
+    <div id="view">
+        <div class="carouselContainer">
+            <button @click="prevPage"> < </button>
+            <div class="carousel">
+                <div 
+                    v-for="(slide) in paginations" 
+                    class="carousel-item"
+                    :style="{
+                        left : `${(slide-currentPage)*15}rem`
+                    }"
+                    :class="{
+                        'slideActive': (currentPage === slide),
+                        'slideShow': (currentPage + 3 >= slide),
+                    }"
+
+                    @click="selectPage(slide)" 
+                    >
+                    <p>{{currentPage}}/{{slide}}</p>
+                    <img :src="`https://picsum.photos/200/200?random=${slide}`">
+                </div>
+            </div>
+            <button @click="nextPage"> > </button>
+        </div>
+    </div>
+</body>
+<script>
+    const VM = {
+        data(){
+            return {
+                paginations: 10,
+                currentPage: 1,
+                clickRight: true,
+                clickLeft: false,
+            }
+        },
+        methods: {
+            prevPage(){
+                //當前頁面是第一頁，不能再往前
+                if(this.currentPage === 1) return
+                this.clickRight = false
+                this.clickLeft = true
+
+                //this.currentPage = this.currentPage - 1
+                this.currentPage -= 1
+            },
+            nextPage(){
+                //當前頁面是最後一頁，不能再往後
+                if(this.currentPage >= this.paginations) return
+                this.clickRight = true
+                this.clickLeft = false
+
+                //this.currentPage = this.currentPage + 1
+                this.currentPage += 1
+            },
+            selectPage(val){
+                this.currentPage = val
+            }
+        }
+    }
+    Vue.createApp(VM).mount('#view')
+</script>
+</html>
+<style>
+    /* reset */
+    img{
+        height: 100%;
+    }
+    iframe{
+        display: block;
+        width: 40rem;
+    }
+    .infoImg{
+        width: 20rem;
+    }
+    /* layput */
+    .carouselContainer{
+        display: inline-flex;
+        width: 100%;
+    }
+    .carousel{
+        position: relative;
+        text-align: center;
+        overflow: hidden;
+        margin: 1rem auto;
+
+        /*  carousel-item高度+5rem */
+        height: 20rem;
+
+        /*  carousel-item寬度*2 : slideShowq判斷(currentPage + 2 >= slide) */
+        /* width: 30rem; */
+
+        /*  carousel-item寬度*3 : slideShowq判斷(currentPage + 3 >= slide) */
+        width: 45rem;
+    }
+    .carousel-item{
+        position: absolute;
+        display: inline-block;
+        width: 15rem;
+        height: 15rem;
+        border: 1px dashed #ddd;
+        /* 移動秒數 */
+        transition: left 3s;
+
+        /* 讓viewbox以外的隱藏，減少疊影 */
+        display: none;
+        opacity: 0.3;
+        z-index: 0;
+    }
+    
+    /* 會顯示在view box裡 */
+    .slideActive{
+        opacity: 1;
+        /* 讓active在最上面，可嘗試註解看看 */
+        z-index: 1;
+    }
+    .slideShow{
+        display: block;
+    }
+</style>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8-3. 幻燈片-translateX</title>
+    <script src="https://unpkg.com/vue@next"></script>
+</head>
+<body>
+    <h6>想法</h6>
+    <p>
+        原本和同學討論的方式比較接近這一個
+        <iframe height="300" scrolling="no" title="Vanilla JS Card Slider V1.0" src="https://codepen.io/evgkhrist/embed/ExErzMR?default-tab=html%2Cresult" frameborder="no" loading="lazy" allowtransparency="true" allowfullscreen="true">
+            See the Pen <a href="https://codepen.io/evgkhrist/pen/ExErzMR">
+            Vanilla JS Card Slider V1.0</a> by Evgeniy Khristoforov (<a href="https://codepen.io/evgkhrist">@evgkhrist</a>)
+            on <a href="https://codepen.io">CodePen</a>.
+        </iframe>
+        直接拿他的code來兜看看
+        <b>這個用css 的translateX來寫，有點複雜啊....</b>
+    </p>
+
+    <div id="view">
+        <div class="carouselContainer">
+            <button @click="prevPage"> < </button>
+            <div class="carousel">
+                <div 
+                    v-for="(slide) in paginations" 
+                    class="carousel-item"
+                    :class="{
+                        'slideActive': (currentPage === slide),
+                        'clickRightMove': clickRight && currentPage <= paginations,
+                        'clickLeftMove': clickLeft && currentPage > 1,
+
+                        'slidePrevRight':  currentPage -1 === slide,
+                        'slideNextRight':  currentPage + 1 === slide,
+                        'slideNext2Right': currentPage + 2 === slide,
+
+                        'slidePrevLeft':  currentPage -1 === slide,
+                        'slideNextLeft':  currentPage + 1 === slide,
+                        'slideNext2Left':  currentPage + 2 === slide,
+                    }"
+                    @click="selectPage(slide)" 
+                    >
+                    <p>{{currentPage}}/{{slide}}</p>
+                    <img :src="`https://picsum.photos/200/200?random=${slide}`">
+                </div>
+            </div>
+            <button @click="nextPage"> > </button>
+        </div>
+    </div>
+
+</body>
+<script>
+    const VM = {
+        data(){
+            return {
+                paginations: 10,
+                currentPage: 1,
+                clickRight: false,
+                clickLeft: false,
+            }
+        },
+        methods: {
+            prevPage(){
+                //當前頁面是第一頁，不能再往前
+                if(this.currentPage === 1) return
+                this.clickRight = false
+                this.clickLeft = true
+
+                //this.currentPage = this.currentPage - 1
+                this.currentPage -= 1
+            },
+            nextPage(){
+                //當前頁面是最後一頁，不能再往後
+                if(this.currentPage >= this.paginations) return
+                this.clickRight = true
+                this.clickLeft = false
+
+                //this.currentPage = this.currentPage + 1
+                this.currentPage += 1
+            },
+            selectPage(val){
+                this.currentPage = val
+            }
+        }
+    }
+    Vue.createApp(VM).mount('#view')
+</script>
+</html>
+<style>
+    /* reset */
+    img{
+        height: 100%;
+    }
+    iframe{
+        display: block;
+        width: 40rem;
+    }
+    /* layput */
+    .carouselContainer{
+        display: inline-flex;
+        width: 100%;
+    }
+    .carousel{
+        position: relative;
+        text-align: center;
+        overflow: hidden;
+        /*  carousel-item寬度*2+5rem  */
+        width: 30rem;
+        /*  carousel-item高度+5rem */
+        height: 15rem;
+        margin: 1rem auto;
+    }
+    .carousel-item{
+        position: absolute;
+        display: inline-block;
+        width: 10rem;
+        height: 10rem;
+        border: 1px dashed #ddd;
+
+        display: none;
+        opacity: 0.3;
+    }
+    
+    /* 會顯示在view box裡 */
+    .slideActive{
+        display: block;
+        opacity: 1;
+    }
+    .slidePrevRight,
+    .slidePrevLeft{
+        display: block;
+        transform: translateX(-15rem);
+    }
+    .slideNextRight,
+    .slideNextLeft{
+        display: block;
+        transform: translateX(15rem);
+    }
+    .slideNext2Right,
+    .slideNext2Left{
+        display: block;
+        transform: translateX(30rem);
+    }
+    /* 當點擊>的時候大家一起從右往左移 */
+    .slidePrevRight.clickRightMove{
+        animation: moveRightNext0 3s;
+    }
+    .slideActive.clickRightMove{
+        animation: moveRightNext1 3s;
+    }
+    .slideNextRight.clickRightMove{
+        animation: moveRightNext2 3s;
+    }
+    .slideNext2Right.clickRightMove{
+        animation: moveRightNext3 3s;
+    }
+    @keyframes moveRightNext0 {
+        from {transform: translateX(0rem);}
+        to {transform: translateX(-15rem);}
+    }
+    @keyframes moveRightNext1 {
+        from {transform: translateX(15rem);}
+        to {transform: translateX(0rem);}
+    }
+    @keyframes moveRightNext2 {
+        from {transform: translateX(30rem);}
+        to {transform: translateX(15rem);}
+    }
+    @keyframes moveRightNext3 {
+        from {transform: translateX(37.5rem);}
+        to {transform: translateX(30rem);}
+    }
+    /* 當點擊<的時候大家一起從左往右移 */
+
+    .slidePrevLeft.clickLeftMove{
+        animation: moveLefttNext0 3s;
+    }
+    .slideActive.clickLeftMove{
+        animation: moveLeftNext1 3s;
+    }
+    .slideNextLeft.clickLeftMove{
+        animation: moveLeftNext2 3s;
+    }
+    .slideNext2Left.clickLeftMove{
+        animation: moveLeftNext3 3s;
+    }
+    @keyframes moveLefttNext0 {
+        from {transform: translateX(-15rem);}
+        to {transform: translateX(0rem);}
+    }
+    @keyframes moveLeftNext1 {
+        from {transform: translateX(0rem);}
+        to {transform: translateX(15rem);}
+    }
+    @keyframes moveLeftNext2 {
+        from {transform: translateX(15rem);}
+        to {transform: translateX(30rem);}
+    }
+    @keyframes moveLeftNext3 {
+        from {transform: translateX(30rem);}
+        to {transform: translateX(37.5rem);}
+    }
+
+</style>
