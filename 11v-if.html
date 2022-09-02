@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>11 v-if + transition</title>
+    <script src="https://unpkg.com/vue@next"></script>
+</head>
+<body>
+    <div id="app">
+        <!-- https://vuejs.org/guide/built-ins/transition.html -->
+
+        <button @click="loginToggle = !loginToggle">切換</button>
+
+        <transition>
+            <div 
+                v-if="loginToggle"
+                id="loginContainer" 
+                class="container"
+            >
+                <h6>Log in</h6>
+                <p>Hello, friend! I'm sdadasdsadasdcsdcsdcc來登入喔喔喔</p>
+                <p>
+                    Dont' have an account?<button @click="loginToggleBtn(false)">Sign UP</button>
+                </p>
+            </div>
+
+            <div 
+                v-else
+                id="signupContainer" 
+                class="container"
+            >
+                <h6>Sign up</h6>
+                <p>Hello, friend! I'm sdadasdsadasdcsdcsdcc來加入吧吧吧吧</p>
+                <p>
+                    Already have an account<button @click="loginToggleBtn(true)">Log in</button>
+                </p>
+            </div>
+        </transition>
+    </div>
+</body>
+<script>
+    const App = {
+        data(){
+            return {
+                loginToggle: true
+            }
+        },
+        methods: {
+            loginToggleBtn(val){
+                this.loginToggle = val
+            }
+        }
+    }
+    Vue.createApp(App).mount('#app')
+</script>
+</html>
+<style>
+    .container{
+        /* position: fixed; */
+        width: 50vw;
+        height: 30rem;
+        padding: 1rem;
+        border: 1px solid #ddd;
+    }
+    .container > *{
+        text-align: center;
+        padding: 0;
+    }
+    h6{
+        font-size: 2rem;
+        margin: 1rem;
+    }
+    p{
+        width: 80%;
+        margin: 1rem auto;
+    }
+    p button{
+        border: none;
+        border-bottom: 1px solid #000;
+        background-color: transparent;
+    }
+    .container > button{
+        display: block; 
+        border-radius: 2rem;
+        margin: .5rem auto;
+        padding: .5rem 2rem;
+        line-height: 2;
+    }
+    .container > button{
+        width: 19rem;
+    }
+    
+    /* Vue transition css */
+    .v-enter-active, 
+    .v-leave-active { 
+        transition: opacity 1s; 
+    }
+    .v-enter-from, 
+    .v-leave-to { 
+        opacity: 0; 
+    }
+    .v-enter-to,
+    .v-leave-from {
+         opacity: 1;
+    }
+</style>

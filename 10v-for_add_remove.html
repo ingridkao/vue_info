@@ -16,12 +16,16 @@
             frameworks is
         </p>
         <ul>
-            <!-- key: 補上唯一值，像是id或是index，可節省效能 -->
-            <li v-for="(item, index) in frameworks" :key="index">
-                <button @click="removeItem(index)">移除</button>
-                Key : {{index}}
-                Value : {{item}}
-            </li>
+            <transition-group>
+                
+                <!-- key: 補上唯一值，像是id或是index，可節省效能 -->
+                <li v-for="(item, index) in frameworks" :key="index">
+                    <button @click="removeItem(index)">移除</button>
+                    Key : {{index}}
+                    Value : {{item}}
+                </li>
+            </transition-group>
+
         </ul>
         <hr>
         <p>輸入名稱(物件的key）和類型(物件的value）</p>
@@ -74,5 +78,18 @@
 <style>
     li{
         list-style-type: none;
+    }
+    /* Vue transition css */
+    .v-enter-active, 
+    .v-leave-active { 
+        transition: opacity 1s; 
+    }
+    .v-enter-from, 
+    .v-leave-to { 
+        opacity: 0; 
+    }
+    .v-enter-to,
+    .v-leave-from {
+         opacity: 1;
     }
 </style>
