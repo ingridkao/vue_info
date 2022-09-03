@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>拉麵人</title>
+    <script src="https://unpkg.com/vue@next"></script>
+</head>
+<body>
+    <div id="view">
+        <div class="container">
+            <div class="banner"></div>
+            <h1>輪播看不懂只好賣拉面</h1>
+            <div class="menu">
+                <!-- <div class="item" v-for="(item, index) in lamelist" :key="index"> -->
+                <div class="item" v-for="(item, index) in lamelist" :key="item.id">
+                    <img :src="item.img" alt="">
+                    <p>{{item.title}}</p>
+                    客製
+                    <hr>
+                    <input type="radio" name="customize">面硬
+                    <input type="radio" name="customize">面軟
+                    <p>購買數量:{{item.sauce}}</p>
+                    <p>剩餘數量:{{item.stock}}</p>
+                    <button @click="buy(index)">1點擊購買+</button>
+                    <button @click="buy2(item)">2點擊購買+</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+const VM = {
+        data(){
+            return {
+                lamelist: [
+                    {
+                        id: "A0",
+                        img: "http://www.tabirai.net/tabirai-uploader/img/0005408/s1_0005408.jpg",
+                        title: "醬油之不想努力拉面",
+                        sauce: 0,
+                        stock: 0
+                    },
+                    {
+                        id: "A1",
+                        img: "http://3.bp.blogspot.com/-aj0ideQcly0/VfZ5RvLGyDI/AAAAAAAAWzE/Vy6U0R6vs90/s1600/IMG_2848.jpg",
+                        title: "擔擔之中樂透頭獎面",
+                        sauce: 0,
+                        stock: 0
+                    },
+                    {
+                        id: "3A",
+                        img: "https://farm1.static.flickr.com/380/32022985490_3e2bfbe774_b.jpg",
+                        title: "味噌之不想熬夜了叉燒",
+                        sauce: 0,
+                        stock: 0
+                    }
+                ]
+            }
+        },
+        methods: {
+            buy(item) {
+                this.lamelist[item]["sauce"]  +=1
+                this.lamelist[item]["stock"]  -=1
+            },
+            buy2(item) {
+                // const target = this.lamelist.findIndex(item2 => (item2.id === item.id))
+                // const target = this.lamelist.findIndex(item2 => item2.id === item.id)
+                const target = this.lamelist.findIndex((item2) => {
+                    return item2.id === item.id
+                })
+                this.lamelist[target]["sauce"]  +=1
+                this.lamelist[target]["stock"]  -=1
+            }
+        },
+    watch: {
+    soySauce: function(){
+				this.SsoldOut = this.soySauce === 0
+        alert("賣完了")
+    },
+    }
+    }
+    Vue.createApp(VM).mount('#view')
+</script>
+</html>
+<style>
+    body{
+  padding: 0;
+  margin: 0;
+}
+.item{
+  padding: 1em;
+}
+.item img{
+  width: 14em;
+  height: 14em;
+}
+
+.menu{
+  display: flex;
+  justify-content: center;
+}
+.banner{
+  height: 300px;
+  width: 100%;
+background-position: top;
+  background-image: url("https://img.letsplay.tw/uploads/20210812154505_59.jpg");
+}
+.container h1{
+  text-align: center;
+}
+
+</style>
