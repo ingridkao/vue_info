@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>13生命週期-接API1</title>
+    <script src="https://unpkg.com/vue@next"></script>
+</head>
+<style>
+    #view{
+        background-color: #999;
+    }
+    .card{
+        display: inline-flex;
+        width: 30vw;
+        margin-bottom: 1rem;
+    }
+    .imgBox{
+        width: 10rem;
+        height: 10rem;
+    }
+    .imgBox > div{
+        height: 100%;
+        background-size: contain;
+        background-position: 50%;
+        background-repeat: no-repeat;
+    }
+    img{
+        height: 100%;
+    }
+</style>
+<body>
+    <div id="view">
+        <!-- 1. 先確認productList的資料狀況 -->
+        <!-- {{productList}} -->
+
+        <!-- 2. 透過v-for將陣列中的資料渲染出來 -->
+        <div 
+            v-for="(item) in productList" 
+            :key="item.id"
+            class="card" 
+        >
+            <!-- 3-1. 圖片顯示方式：使用img -->
+            <!-- <div class="imgBox">
+                <img :src="item.image" alt="">
+            </div> -->
+
+             <!-- 3-2. 圖片顯示方式：使用div -->
+            <div class="imgBox">
+                <div
+                    :style="{
+                        backgroundImage: `url( ${item.image })`
+                    }"
+                ></div>
+            </div>
+
+            <!-- 4. 評價星星可以透過之前章節的方式思考 -->
+            <div class="star">
+                <span class="rate">
+                    <!-- 4-1 先確認rate數值 -->
+                    <!-- {{item.rating.rate}} -->
+
+                    <!-- 4-2 如果要顯示四顆星 -->
+                    <!-- <span>🌟</span>
+                        <span>🌟</span>
+                        <span>🌟</span>
+                        <span>🌟</span> -->
+                    
+                    <!-- 4-3 用v-for渲染的方法 -->
+                    <!-- <span v-for="i in 4">🌟</span> -->
+
+                    <!-- 4-4 由於只能輸入正整數，需要將資料數值用parseInt轉變成正整數 -->
+                    <!-- <span v-for="i in (parseInt(item.rating.rate))">🌟</span>                         -->
+                        
+                    <!-- 4-5 透過在methods中定義方法來輸入，可以做比較複雜的運算 -->
+                    <!-- <span v-text="parseStar1(item.rating.rate)"></span> -->
+                    
+                    <!-- 4-6 同上，想要顯示空星星 -->
+                    <span v-text="parseStar2(item.rating.rate)"></span>
+                </span>
+                <span class="count">
+                    from {{item.rating.count}} person
+                </span>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    const VM = {
+        data(){
+            return {
+                productList: [],
+                sec2: 5
+            }
+        },
+        methods: {
+            mountView(){
+                //透過fetch API來取得資料
+                fetch('https://fakestoreapi.com/products')
+                .catch((error)=>{
+                    //回傳異常狀況
+                    console.log(error)
+                })
+                .then((response) =>{
+                    //詳細說明 https://developer.mozilla.org/zh-CN/docs/Web/API/Response/json
+                    //回傳response
+                    return response.json()
+                })
+                // .then(function(myJson){
+                    // 會到有些範例使用上面一行寫法，但這樣在這個function作用域的this，會指向到window而不是Vue實體
+                .then((myJson) =>{
+                    //透過箭頭函式，讓this指向到Vue實體
+                    // console.log(this)
+                    
+                    //確認回傳為空陣列
+                    // console.log(this.productList);
+                    
+                    //回傳myJson，並將此資料賦值給Vue實體的data中
+                    this.productList = myJson
+                })
+            },
+            parseStar1(rate){
+                //需要四捨五入
+                const res = rate.toFixed()
+
+                // for (變數 in 物件) {...}
+                // 由於只能輸入物件所以不能用forin
+                let star = ""
+                for (let i = 0; i < res; i++) {
+                    star += "🌟"
+                }
+                return star+rate
+            },
+            parseStar2(rate){
+                //需要沒有亮的星星
+                const res = rate.toFixed()
+                let star = ""
+                for (let i = 0; i < 5; i++) {
+                    if(i >= res){
+                        star += "☆"
+                    }else{
+                        star += "★"
+                    }
+                }
+                return star+rate
+            }
+        },
+        created() {
+            //Vue開始被建立
+            console.log('create');
+        },
+        mounted() {
+            //畫面載入後，DOM物件(div#view)已被建立
+            console.log('mounted');
+            this.mountView()
+        }
+    }
+    Vue.createApp(VM).mount('#view')
+</script>
+</html>

@@ -12,7 +12,7 @@
         <div>
             {{msg1}}
             {{msg2}}
-            <button @click="trigger">trigger</button>
+            <button @click="stop">stop</button>
         </div>
     </div>
 </body>
@@ -27,8 +27,8 @@
             }
         },
         methods: {
-            trigger(){
-                console.log('trigger');
+            stop(){
+                console.log('stop');
                 this.remove()
             },
             initView(){
