@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>13生命週期</title>
+    <script src="https://unpkg.com/vue@next"></script>
+</head>
+<body>
+    <div id="view">
+        <div>
+            {{msg1}}
+            {{msg2}}
+            <button @click="trigger">trigger</button>
+        </div>
+    </div>
+</body>
+<script>
+    const VM = {
+        data(){
+            return {
+                msg1: 0,
+                msg2: 1000,
+                timeOutProcessId: null,
+                timeOutRefresh: null
+            }
+        },
+        methods: {
+            trigger(){
+                console.log('trigger');
+                this.remove()
+            },
+            initView(){
+                console.log('create- initView');
+                // let vm = this;
+                //
+                this.timeOutProcessId = setTimeout(() => {
+                    console.log('一秒 後 要做的事');
+                    this.msg1 += 1
+                // }, 1000 * 60 * 60);
+                }, 1000);
+            },
+            mountView(){
+                console.log('mounted- mountView');
+                this.timeOutRefresh = setInterval(() => {
+                    console.log('每五秒要做的事');
+                    this.msg2 -= 5
+                }, 1000);
+            },
+            remove(){
+                clearTimeout(this.timeOutProcessId);
+                clearInterval(this.timeOutRefresh);
+            }
+        },
+        beforeCreated() {
+            console.log('beforeCreated');
+            console.log(document.getElementById('view'))
+        },
+        created() {
+            //Vue開始被建立
+            console.log('create');
+            this.initView()
+        },
+        mounted() {
+            //畫面仔入的時候....
+            console.log('mounted');
+            this.mountView()
+        },
+        beforeUnmount() {
+            // 計時器要清掉
+            // removeTimeout ...
+            console.log('beforeUnmount');
+            this.remove()
+        }
+    }
+    Vue.createApp(VM).mount('#view')
+</script>
+</html>
