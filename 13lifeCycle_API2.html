@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>13生命週期-接API2+排版</title>
+    <script src="https://unpkg.com/vue@next"></script>
+</head>
+<style>
+    /* 預設來說過1rem = 16px */
+    *{
+        margin: 0;
+        padding: 0;
+    }
+    #view{
+        padding: 1rem;
+        font-family: monospace;
+    }
+    .gridView{
+        display: flex;
+        /* 超出範圍時是否換行的屬性，分為換行、不換行、換行時反轉。 */
+        flex-wrap: wrap;
+        flex-direction: row;
+        justify-content: center;
+
+        width: 100%;
+        max-width: 100rem;
+        margin: 0 auto;
+    }
+    .products-row{
+        flex-grow: 0;
+        flex-basis: 20rem;
+        margin: .5rem;
+        padding: .5rem;
+        border-radius: .25rem;
+        cursor: pointer;
+        transition: transform 0.2s;
+        /* background-color: var(--app-content-secondary-color); */
+        background-color: #f3f6fd; 
+    }
+    .products-row:hover {
+        transform: scale(1.01);
+        /* box-shadow: var(--filter-shadow); */
+        box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    }
+    .products-row .textBox{
+        opacity: 0.6;
+    }
+    .products-row:hover .textBox{
+        opacity: 1;
+    }
+    .imgBox{
+        width: 100%;
+        height: 10rem;
+        background-color: #fff;
+        border-radius: .25rem;
+    }
+    .imgBox > div{
+        height: 100%;
+        background-size: contain;
+        background-position: 50%;
+        background-repeat: no-repeat;
+    }
+    img{
+        height: 100%;
+    }
+    .titleBox{
+        margin: 1rem 0;
+    }
+    .titleBox h6{
+        height: 4rem;
+        font-size: 1.1rem;
+    }
+    .textBox{
+        width: 100%;
+        display: inline-flex;
+        justify-content: space-between;
+        margin-bottom: .25rem;
+        color: #1f1c2e;
+    }
+    .textBox p{
+        margin: 0;
+    }
+</style>
+<body>
+    <div id="view">
+        <!-- 參考https://codepen.io/aybukeceylan/pen/PopNYeJ -->
+        <div class="gridView">
+            <div 
+                v-for="(item) in productList" 
+                :key="item.id"
+                class="products-row" 
+            >
+                <div class="imgBox">
+                    <div
+                        :style="{
+                            backgroundImage: `url( ${item.image })`
+                        }"
+                    ></div>
+                </div>
+    
+                <div class="titleBox">
+                    <span class="rate">
+                        <!-- 兩個寫法一樣，但下面可以塞html tag，像JQ的$(".rate").html(...)一樣 -->
+                        <span>{{ parseStar(item.rating.rate) }}</span>
+                        <!-- <span v-text="parseStar(item.rating.rate)"></span> -->
+                    </span>
+                    <span class="count">
+                        from {{item.rating.count}} person
+                    </span>
+                    <h6>
+                        {{item.title}}
+                    </h6>
+                </div>
+
+                <div class="textBox">
+                    <p>category:</p>
+                    <p>{{item.category}}</p>
+                </div>
+
+                <div class="textBox">
+                    <p>price:</p>
+                    <p>{{item.price}}</p>
+                </div>
+
+                <div class="textBox">
+                    <p>Sales:</p>
+                    <p>0</p>
+                </div>
+
+                <div class="textBox">
+                    <p>Stock:</p>
+                    <p>0</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    const VM = {
+        data(){
+            return {
+                productList: []
+            }
+        },
+        methods: {
+            mountView(){
+                //透過fetch API來取得資料
+                fetch('https://fakestoreapi.com/products')
+                .catch((error)=>{
+                    //回傳異常狀況
+                    console.log(error)
+                })
+                .then((response) =>{
+                    //詳細說明 https://developer.mozilla.org/zh-CN/docs/Web/API/Response/json
+                    //回傳response
+                    return response.json()
+                })
+                // .then(function(myJson){
+                    // 會到有些範例使用上面一行寫法，但這樣在這個function作用域的this，會指向到window而不是Vue實體
+                .then((myJson) =>{
+                    //透過箭頭函式，讓this指向到Vue實體
+                    // console.log(this)
+                    
+                    //確認回傳為空陣列
+                    // console.log(this.productList);
+                    
+                    //回傳myJson，並將此資料賦值給Vue實體的data中
+                    this.productList = myJson
+                })
+            },
+            parseStar(rate){
+                //需要沒有亮的星星
+                const res = rate.toFixed()
+                let star = ""
+                for (let i = 0; i < 5; i++) {
+                    if(i >= res){
+                        star += "☆"
+                    }else{
+                        star += "★"
+                    }
+                }
+                return star+rate
+            }
+        },
+        created() {
+            //Vue開始被建立
+            console.log('create');
+        },
+        mounted() {
+            //畫面載入後，DOM物件(div#view)已被建立
+            console.log('mounted');
+            this.mountView()
+        }
+    }
+    Vue.createApp(VM).mount('#view')
+</script>
+</html>
