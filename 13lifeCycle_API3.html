@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>13生命週期-接API3+訂單</title>
+    <script src="https://unpkg.com/vue@next"></script>
+</head>
+<style>
+    /* 預設來說過1rem = 16px */
+    *{
+        margin: 0;
+        padding: 0;
+    }
+    #view{
+        font-family: monospace;
+        display: inline-flex;
+    }
+    #view > *{
+        padding: 1rem;
+    }
+    #gridView{
+        display: flex;
+        /* 超出範圍時是否換行的屬性，分為換行、不換行、換行時反轉。 */
+        flex-wrap: wrap;
+        flex-direction: row;
+        justify-content: center;
+
+        width: 100%;
+        /* max-width: 100rem; */
+        margin: 0 auto;
+    }
+    #orderContainer{
+        width: 30rem;
+        background-color: #f3f6fd;
+        box-shadow: rgba(136, 220, 204, 0.3) 0px 0px 5px 2px;
+    }
+    .products-row{
+        flex-grow: 0;
+        flex-basis: 20rem;
+        margin: .5rem;
+        padding: .5rem;
+        border-radius: .25rem;
+        cursor: pointer;
+        transition: transform 0.2s;
+        /* background-color: var(--app-content-secondary-color); */
+        background-color: #f3f6fd; 
+    }
+    .products-row:hover {
+        transform: scale(1.01);
+        /* box-shadow: var(--filter-shadow); */
+        box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    }
+    .products-row .textBox{
+        opacity: 0.6;
+    }
+    .products-row:hover .textBox{
+        opacity: 1;
+    }
+    .imgBox{
+        width: 100%;
+        height: 10rem;
+        background-color: #fff;
+        border-radius: .25rem;
+    }
+    .imgBox > div{
+        height: 100%;
+        background-size: contain;
+        background-position: 50%;
+        background-repeat: no-repeat;
+    }
+    img{
+        height: 100%;
+    }
+    h6{
+        height: 4rem;
+        font-size: 1.1rem;
+    }
+    .titleBox{
+        margin: 1rem 0;
+    }
+    .textBox{
+        width: 100%;
+        display: inline-flex;
+        justify-content: space-between;
+        margin-bottom: .25rem;
+        color: #1f1c2e;
+    }
+    .textBox p{
+        margin: 0;
+    }
+    .btnBox{
+        width: 100%;
+        display: inline-flex;
+        justify-content: flex-end;
+        margin: .25rem 0;
+    }
+    .btnBox button{
+        width: 1rem;
+        height: 1rem;
+        border-radius: 50%;
+        line-height: 0;
+        margin: 0 .5rem;
+        cursor: pointer;
+    }
+</style>
+<body>
+    <div id="view">
+        <!-- 參考https://codepen.io/aybukeceylan/pen/PopNYeJ -->
+        <div id="gridView">
+            <div 
+                v-for="(item) in productList" 
+                :key="item.id"
+                class="products-row" 
+            >
+                <div class="imgBox">
+                    <div
+                        :style="{
+                            backgroundImage: `url( ${item.image })`
+                        }"
+                    ></div>
+                </div>
+    
+                <div class="titleBox">
+                    <span class="rate">
+                        <!-- 兩個寫法一樣，但下面可以塞html tag，像JQ的$(".rate").html(...)一樣 -->
+                        <span>{{ parseStar(item.rating.rate) }}</span>
+                        <!-- <span v-text="parseStar(item.rating.rate)"></span> -->
+                    </span>
+                    <span class="count">
+                        from {{item.rating.count}} person
+                    </span>
+                    <h6>
+                        {{item.title}}
+                    </h6>
+                </div>
+
+                <div class="textBox">
+                    <p>category:</p>
+                    <p>{{item.category}}</p>
+                </div>
+
+                <div class="textBox">
+                    <p>price:</p>
+                    <p>{{item.price}}</p>
+                </div>
+
+                <div class="btnBox">
+                    <button @click="reduceOrder(item)">-</button>
+                    <p>{{ parseOrder(item)}}</p>
+                    <button @click="addOrder(item)">+</button>
+                </div>
+            </div>
+        </div>
+        <aside id="orderContainer">
+            <h6>Order List</h6>
+            <!-- 接下來這邊自己寫看看囉 -->
+            {{orderList}}
+        </aside>
+    </div>
+</body>
+<script>
+    const VM = {
+        data(){
+            return {
+                productList: [],
+                orderList: []
+            }
+        },
+        methods: {
+            mountView(){
+                fetch('https://fakestoreapi.com/products')
+                .catch((error)=>{
+                    console.log(error)
+                })
+                .then((response) =>{
+                    return response.json()
+                })
+                .then((myJson) =>{
+                    this.productList = myJson
+                })
+            },
+            parseStar(rate){
+                const res = rate.toFixed()
+                let star = ""
+                for (let i = 0; i < 5; i++) {
+                    star += ((i >= res)?"☆": "★")
+                }
+                return star+rate
+            },
+            addOrder(item){
+                //加入數量||加入訂單項目
+                // console.log(item.id);
+
+                // 這邊會從使用find到變成使用findIndex
+                // 1. find
+                // const check = this.orderList.find(order => {
+                //     return order.id === item.id
+                // })
+                // if(check){
+                // }else{
+                //     // 1. 三個點：透過"展開運算符"將item原封不動地丟進去 https://eyesofkids.gitbooks.io/javascript-start-from-es6/content/part4/rest_spread.html
+                //     // 2. 增加一個key：count=0
+                //     this.orderList.push({
+                //         ...item,
+                //         count: 0
+                //     })
+                // }
+
+                // 2. findIndex
+                const checkIndex = this.orderList.findIndex(order => {
+                    return order.id === item.id
+                })
+                if(checkIndex >= 0){
+                    // 項目已存在訂單中，增加數量
+                    // console.log(this.orderList[checkIndex]["count"]);
+                    this.orderList[checkIndex]["count"] += 1
+                }else{
+                    //項目沒存在訂單中，加入訂單
+                    // 1. 三個點：透過"展開運算符"將item原封不動地丟進去 https://eyesofkids.gitbooks.io/javascript-start-from-es6/content/part4/rest_spread.html
+                    // 2. 增加一個key：count=0
+                    this.orderList.push({
+                        ...item,
+                        count: 0
+                    })
+                }
+                //Set localStorage
+                //可以參考/qa/1.cart_feedback.html
+            },
+            reduceOrder(item){
+                //減少數量||移除訂單項目 - 和addOrder幾乎一模壹樣，故省略註解並把寫法簡化
+                const checkIndex = this.orderList.findIndex(order => order.id === item.id)
+
+                // 如果訂單項目不存在就return跳出，不要繼續往下做事
+                if(checkIndex < 0) return
+
+                // console.log(this.orderList[checkIndex]["count"]);
+                if(this.orderList[checkIndex]["count"] > 1){
+                    // 項目已存在訂單中，減少數量
+                    this.orderList[checkIndex]["count"] -= 1
+
+                }else{
+                    // 數量剩一個，直接把項目移出訂單
+                    this.orderList.splice(checkIndex, 1)
+                }
+                //Set localStorage
+                //可以參考/qa/1.cart_feedback.html
+            },
+            parseOrder(item){
+                //去訂單列表中確認這個商品的數量
+                const checkIndex = this.orderList.findIndex(order => order.id === item.id)
+                // 需要先判斷
+                if(this.orderList[checkIndex]){
+                    return this.orderList[checkIndex]["count"]
+                }else{
+                    //沒有東西回0
+                    return 0
+                }
+            }
+        },
+        mounted() {
+            //畫面載入後，DOM物件(div#view)已被建立
+            console.log('mounted');
+            this.mountView()
+
+            //Get localStorage
+            //可以參考/qa/1.cart_feedback.html
+        }
+    }
+    Vue.createApp(VM).mount('#view')
+</script>
+</html>
