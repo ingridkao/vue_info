@@ -166,6 +166,7 @@
                 <p>項目總額: ${{item.price * item.count}}</p>
             </div>
             <div>總金額: ${{pricetSum.toFixed(2)}}</div>
+            <button v-if="orderList.length > 0" @click="orderList = []">清除購物車</button>
         </aside>
     </div>
     <script src="https://unpkg.com/vue@next"></script>
@@ -183,6 +184,14 @@
                 return this.orderList.reduce((previousValue, currentItem) => {
                     return previousValue + (currentItem.price * currentItem.count)
                 }, 0)
+            }
+        },
+        watch:{
+            orderList: {
+                handler (newVal , oldVal) {
+                    this.setStorage(newVal)
+                },
+                deep: true//監聽陣列內容
             }
         },
         methods: {
@@ -242,8 +251,6 @@
                         count: 1
                     })
                 }
-                //Set localStorage
-                //可以參考/qa/1.cart_feedback.html
             },
             reduceOrder(item){
                 //減少數量||移除訂單項目 - 和addOrder幾乎一模壹樣，故省略註解並把寫法簡化
@@ -261,8 +268,6 @@
                     // 數量剩一個，直接把項目移出訂單
                     this.orderList.splice(checkIndex, 1)
                 }
-                //Set localStorage
-                //可以參考/qa/1.cart_feedback.html
             },
             parseOrder(item){
                 //去訂單列表中確認這個商品的數量
@@ -274,13 +279,24 @@
                     //沒有東西回0
                     return 0
                 }
+            },
+            setStorage(data){
+                //將orderList透過參數的方式傳過來
+                const orderStorage = JSON.stringify(data)
+                localStorage.setItem('gogobuy', orderStorage)
+            },
+            getStorage(){
+                const orderLists = localStorage.getItem('gogobuy')
+                if(!orderLists || orderLists === 'undefined' )return
+                this.orderList = JSON.parse(orderLists)
             }
+        },
+        created() {
+            this.getStorage()
         },
         mounted() {
             //畫面載入後，DOM物件(div#view)已被建立
-            console.log('mounted');
             this.mountView()
-
             //Get localStorage
             //可以參考/qa/1.cart_feedback.html
         }
