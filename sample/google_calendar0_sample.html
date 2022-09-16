@@ -1,27 +1,39 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Google Calendar API 1 - Quickstart</title>
+        <title>Google Calendar API 1 - 讀取日曆Iframe & JS</title>
         <meta charset="utf-8" />
     </head>
     <body>
-        <main>
+        <div>
+            <h6>方法一</h6>
+            <p>1. 如果僅想取得日曆，使用這個即可，如果覺得視覺不大好看，使用css覆蓋即可</p>
+            <p>2. 更改設定後要再換iframe 的URL</p>
+            <p>3. 直接嵌入iframe</p>
+            <iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=1&bgcolor=%2333B679&ctz=Asia%2FTaipei&showTitle=0&showNav=0&showDate=0&src=bzdqMmw4dDNjYjltYmcwYzh1NTVzZWc0ZWtAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&src=emgtdHcudGFpd2FuI2hvbGlkYXlAZ3JvdXAudi5jYWxlbmRhci5nb29nbGUuY29t&color=%23F09300&color=%234285F4" style="border:solid 1px #777" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+        </div>
+
+        <div>
+            <h6>方法二</h6>
             <p>Google Calendar API Quickstart - js原始碼</p>
-            <p>功能：顯示Event</p>
+            <p>網路上的範例緊google官網的為正確版本，主要在於需要加入<b>https://accounts.google.com/gsi/client</b>用於確認帳戶oauth2，預計9月底前將這段code用vue實作</p>
+            <p>功能：顯示日曆的重要Event</p>
             <hr>
-            <p>要記得改程式碼中的'<YOUR_CLIENT_ID>'和'<YOUR_API_KEY>'</p>
+            <p>要記得改程式碼中的 "YOUR_CLIENT_ID" 和 "YOUR_API_KEY"</p>
+            <hr>
+            <h6>Reference</h6>
+            <a href="https://developers.google.com/calendar/api/quickstart/js" target="_blank">Google官方文件</a>
+            <a href="https://ithelp.ithome.com.tw/articles/10223539" target="_blank">申請方式可以先參考這一篇1</a>
+            <a href="https://ithelp.ithome.com.tw/articles/10279272" target="_blank">申請方式可以先參考這一篇2</a>
+        </div>
+
+        <main> 
             <!--Add buttons to initiate auth sequence and sign out-->
             <button id="authorize_button" onclick="handleAuthClick()">Authorize</button>
             <button id="signout_button" onclick="handleSignoutClick()">Sign Out</button>
-
+    
             <pre id="content" style="white-space: pre-wrap;"></pre>
         </main>
-
-        <footer>
-            <h6>Reference</h6>
-            <a href="https://developers.google.com/calendar/api/quickstart/js" target="_blank">Google官方文件</a>
-        </footer>
-
 
         <script>
             /* exported gapiLoaded */
@@ -32,7 +44,6 @@
             // TODO(developer): Set to client ID and API key from the Developer Console
             const CLIENT_ID = '<YOUR_CLIENT_ID>';
             const API_KEY = '<YOUR_API_KEY>';
-
 
             // Discovery doc URL for APIs used by the quickstart
             const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
@@ -134,35 +145,48 @@
             */
             async function listUpcomingEvents() {
                 let response;
+                // const calendarId = 'primary'                                          //要訪問當前登錄用戶的主日曆，請使用“primary”關鍵字。
+                const calendarId = 'o7j2l8t3cb9mbg0c8u55seg4ek@group.calendar.google.com'//要指定日曆則去介面中找到日曆ID
                 try {
                     const request = {
-                        'calendarId': 'primary',
-                        'timeMin': (new Date()).toISOString(), //從現在開始
+                        'calendarId': calendarId,
+                        'timeMin': (new Date()).toISOString(),//從現在開始
                         'showDeleted': false,
                         'singleEvents': true,
-                        'maxResults': 10,                      //顯示十個項目
-                        'orderBy': 'startTime',                //排序
+                        'maxResults': 10,                     //顯示十個項目
+                        'orderBy': 'startTime',               //排序
                     };
                     response = await gapi.client.calendar.events.list(request);
                 } catch (err) {
                     document.getElementById('content').innerText = err.message;
                     return;
                 }
-                console.log(response);
                 const events = response.result.items;
                 if (!events || events.length == 0) {
                     document.getElementById('content').innerText = 'No events found.';
                     return;
                 }
                 // Flatten to string to display
-                // Asia/Taipei
                 const output = events.reduce(
                     (str, event) => `${str}${event.summary} (${event.start.dateTime || event.start.date})\n`,
                     'Events:\n');
                 document.getElementById('content').innerText = output;
             }
-            </script>
-            <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
-            <script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
+        </script>
+        <!-- 
+            1. 確認引入位置：要在body底部，以確保頁面內容已載入完成。
+            2. 確認程式碼在兩個外部文件onload，完成載入後再執行。
+            async- asynchronous(非同步): 以非同步的方式加載資源，當資源加載成功後會中斷頁面解析，立即執行資源內容。
+            defer- deferred(延遲)：以非同步的方式加載資源，當資源加載成功後，於 DOMContentLoaded 前執行資源內容
+        -->
+        <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
+        <script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
     </body>
 </html>
+<style>
+    main{
+        width: 80%;
+        margin: 5rem auto;
+        border: 1px solid #ddd;
+    }
+</style>

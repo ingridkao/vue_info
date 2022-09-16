@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Google Calendar API 2 - 讀取日曆+Vue</title>
+        <meta charset="utf-8" />
+    </head>
+    <body>
+        <main id="view">
+            <p>要記得改程式碼中的' YOUR_CLIENT_ID '和' YOUR_API_KEY '</p>
+
+            <button id="authorize_button" @click="handleAuthClick">{{authorize_text}}</button>
+            <button v-if="signout_button" @click="handleSignOutClick">Sign Out</button>
+
+            <div>
+                <p>{{msg}}</p>
+                <div v-if="content.length > 0" id="contentBox">
+                    <!-- {{content}} -->
+                    <h5 v-if="content[0]['organizer']">{{content[0]['organizer']['displayName']}}</h5>
+                    <ul>
+                        <li v-for="item in content" :key="item.id">
+                            <p>{{item.summary}}</p>
+                            <p>{{item.start.dateTime || item.start.date}}</p>
+                            <p style="text-align: center;">|</p>
+                            <p>{{item.end.dateTime || item.end.date}}</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </main>
+
+        <footer>
+            <h6>Reference</h6>
+            <a href="https://developers.google.com/calendar/api/quickstart/js" target="_blank">Google官方文件</a>
+            <a href="https://www.reddit.com/r/vuejs/comments/usru2x/how_to_use_google_api_client_library_for/" target="_blank">How to use Google API Client Library for JavaScript (gapi) with async/await and Vue 3?</a>
+        </footer>
+
+        <script src="https://unpkg.com/vue@next"></script>
+        <script>
+            // TODO(developer): Set to client ID and API key from the Developer Console
+            // OAuth 2.0 用戶端 ID + API 金鑰
+            const CLIENT_ID = '<YOUR_CLIENT_ID>'
+            const API_KEY = '<YOUR_API_KEY>'
+            // Discovery doc URL for APIs used by the quickstart
+            const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'
+            // Authorization scopes required by the API; multiple scopes can be
+            // included, separated by spaces.
+            const SCOPES = "https://www.googleapis.com/auth/calendar.readonly"
+
+            let tokenClient;
+            let gapiInited = false
+            let gisInited = false
+            /**
+            * Callback after api.js is loaded.
+            */
+            const gapiLoaded = () => { 
+                gapi.load('client', intializeGapiClient)
+            }
+            /**
+            * Callback after the API client is loaded. Loads the
+            * discovery doc to initialize the API.
+            */
+            async function intializeGapiClient() {
+                await gapi.client.init({
+                    apiKey: API_KEY,
+                    discoveryDocs: [DISCOVERY_DOC]
+                })
+                gapiInited = true
+                maybeEnableButtons()
+            }
+            const gisLoaded = () => { 
+                tokenClient = google.accounts.oauth2.initTokenClient({
+                    client_id: CLIENT_ID,
+                    scope: SCOPES,
+                    // callback: '',
+                });
+                gisInited = true
+                maybeEnableButtons();
+            }
+            /**
+            * Enables user interaction after all libraries are loaded.
+            */
+            const maybeEnableButtons = () => {
+                if (gapiInited && gisInited) {
+                    document.getElementById('authorize_button').style.visibility = 'visible'
+                }
+            }
+
+            const App = {
+                data(){
+                    return {
+                        signout_button: false,
+                        authorize_text: 'Authorize',
+                        msg: '',
+                        content: []
+                    }
+                },
+                methods: {
+                    /**
+                    *  Sign in the user upon button click.
+                    */
+                    handleAuthClick(event) {
+                        tokenClient.callback = async (resp) => {
+                            if (resp.error !== undefined) {
+                                throw (resp);
+                            }
+                            this.signout_button = true
+                            this.authorize_text = 'Refresh'
+                            await this.listUpcomingEvents();
+                        };
+
+                        if (gapi.client.getToken() === null) {
+                            tokenClient.requestAccessToken({prompt: 'consent'})
+                        } else {
+                            tokenClient.requestAccessToken({prompt: ''})
+                        }
+                    },
+
+                    /**
+                    *  Sign out the user upon button click.
+                    */
+                    handleSignOutClick(event) {
+                        const token = gapi.client.getToken();
+                        if (token !== null) {
+                            google.accounts.oauth2.revoke(token.access_token)
+                            gapi.client.setToken('')
+                            this.msg = ''
+                            this.content = []
+                            this.authorize_text = 'Authorize'
+                            this.signout_button = false
+                        }
+                    },
+
+                    /**
+                    * Print the summary and start datetime/date of the next ten events in
+                    * the authorized user's calendar. If no events are found an
+                    * appropriate message is printed.
+                    */
+                    async listUpcomingEvents() {
+                        let response;
+                        // const calendarId = 'primary'                                          //要訪問當前登錄用戶的主日曆，請使用“primary”關鍵字。
+                        const calendarId = 'o7j2l8t3cb9mbg0c8u55seg4ek@group.calendar.google.com'//要指定日曆則去介面中找到日曆ID
+
+                        try {
+                            const request = {
+                                'calendarId': calendarId,
+                                'timeMin': (new Date()).toISOString(), //從現在開始
+                                'showDeleted': false,
+                                'singleEvents': true,
+                                'maxResults': 20,                      //顯示20個項目
+                                'orderBy': 'startTime',                //排序
+                            };
+                            response = await gapi.client.calendar.events.list(request)
+                        } catch (err) {
+                            this.msg = err.message
+                            return
+                        }
+                        // console.log(response);
+                        const events = response.result.items;
+                        if (!events || events.length == 0) {
+                            this.msg = 'No events found.'
+                            return
+                        }
+                        // Flatten to string to display
+                        this.content = events
+                    }
+                }
+            }
+            Vue.createApp(App).mount('#view')
+        </script>
+        <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
+        <script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
+    </body>
+</html>
+<style>
+    header > button {
+        display: inline-flex;
+    }
+    footer{
+        border-top: 2px solid #ddd;
+    }
+    footer > a{
+        display: block;
+    }
+    #view > div{
+        width: 100%;
+        margin: 1rem;    
+    }
+    #contentBox ul{
+        max-height: 11rem;
+        overflow-x: scroll;
+        overflow-y: hidden;
+        white-space:nowrap;
+    }
+    #contentBox li{
+        display: inline-block;
+        width: 15rem;
+        height: 10rem;
+        margin: .25rem;
+        padding: .25rem;
+        border: 1px solid #ddd;
+        border-radius: .5rem;
+    }
+</style>

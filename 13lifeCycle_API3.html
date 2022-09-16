@@ -5,7 +5,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>13生命週期-接API3+訂單</title>
-    <script src="https://unpkg.com/vue@next"></script>
 </head>
 <style>
     /* 預設來說過1rem = 16px */
@@ -156,9 +155,20 @@
         <aside id="orderContainer">
             <h6>Order List</h6>
             <!-- 接下來這邊自己寫看看囉 -->
-            {{orderList}}
+            <div 
+                v-for="(item, index) in orderList" 
+                :key="item.id"
+                class="products-row" 
+            >
+                <h6>商品{{index + 1}}</h6>
+                <b>{{item.title}}</b>
+                <p>${{item.price}} X {{item.count}}</p>
+                <p>項目總額: ${{item.price * item.count}}</p>
+            </div>
+            <div>總金額: ${{pricetSum.toFixed(2)}}</div>
         </aside>
     </div>
+    <script src="https://unpkg.com/vue@next"></script>
 </body>
 <script>
     const VM = {
@@ -166,6 +176,13 @@
             return {
                 productList: [],
                 orderList: []
+            }
+        },
+        computed: {
+            pricetSum(){
+                return this.orderList.reduce((previousValue, currentItem) => {
+                    return previousValue + (currentItem.price * currentItem.count)
+                }, 0)
             }
         },
         methods: {
@@ -222,7 +239,7 @@
                     // 2. 增加一個key：count=0
                     this.orderList.push({
                         ...item,
-                        count: 0
+                        count: 1
                     })
                 }
                 //Set localStorage
