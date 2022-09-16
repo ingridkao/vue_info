@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>12 Component</title>
+    <script src="https://unpkg.com/vue@next"></script>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <my-title></my-title>
+        </header>
+        <div class="container">
+            <!-- <aside>
+                aside
+            </aside> -->
+            <my-aside></my-aside>
+            <!-- <main>
+                main
+            </main> -->
+            <my-main></my-main>
+        </div>
+    </div>
+</body>
+<script>
+    const App = {}
+    // 之前一直的寫法
+    // Vue.createApp(App).mount('#app')
+
+    // 1. 透過Vue.createApp(App)建立實體，把它叫做MyVue
+    const MyVue = Vue.createApp(App)
+
+    // 2. 將component註冊在MyVue上
+    MyVue.component('my-title', {
+        template: `<h6>嘿嘿嘿</h6>`,
+         // 內部其餘選項與過去幾乎一樣 
+    })
+
+    MyVue.component('my-aside', {
+        template: `<aside>{{name}}</aside>`,
+        data(){
+            return {
+                name: "側欄"
+            }
+        }
+         // 內部其餘選項與過去幾乎一樣 
+    })
+
+    MyVue.component('my-main', {
+        template: `
+            <main>
+                {{num}}
+                <button @click="add"> + </button>
+            </main>
+        `,
+        data(){
+            return {
+                num: 0
+            }
+        },
+        methods:{
+            add(){
+                this.num += 1
+            }
+        }
+         // 內部其餘選項與過去幾乎一樣 
+    })
+
+    // 3. 全並都掛載在#app
+    MyVue.mount('#app')
+</script>
+</html>
+<style>
+    *{
+        margin: 0;
+        padding: 0;
+    }
+    header{
+        width: 100%;
+        height: 4rem;
+        background-color: #ddd;
+    }
+    .container{
+        display: inline-flex;
+        width: 100%;
+        background-color: #000;
+        height: calc(100vh - 4rem);
+    }
+    aside{
+        flex-grow: 0;
+        flex-basis: 10rem;
+        background-color: #555;
+    }
+    main{
+        flex-grow: 1;
+        background-color: #999;
+    }
+    h6{
+        font-size: 2rem;
+    }
+    button{
+        padding: 1rem;
+    }
+</style>
